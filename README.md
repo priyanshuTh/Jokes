@@ -14,6 +14,7 @@ Jokes come from the excellent [`pyjokes`](https://pypi.org/project/pyjokes/) pac
 - 🎨 Clean UI that mixes **Bootstrap 5** components and **Tailwind utilities** (prefixed with `tw-` to avoid conflicts)
 
 ---
+# [📺 Demo](https://priyanshuth.github.io/WeatherDashboard/)
 
 ## 🧱 Tech Stack
 
