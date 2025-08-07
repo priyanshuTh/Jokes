@@ -1,187 +1,136 @@
-import pyjokes
-import pyttsx3
-import random
-import sys
+from js import document, localStorage, speak
+import pyjokes, json, random
 
-from bokeh.core.validation.check import Validator
+# kept in this tab + localStorage
+joke_history: list[str] = []
+rating_history: list[int] = []
 
-# Initialize voice engine globally to avoid reinitializing
-try:
-    engine = pyttsx3.init()
-    engine.setProperty('rate', 150)
-    engine.setProperty('volume', 1.0)
-    voice_enabled = True
-except Exception:
-    voice_enabled = False
-
-# Store history of jokes and ratings
-joke_history = []
-rating_history = []
-
-# Supported categories in pyjokes (manually defined)
+LAUGHS = ["Ha ha ha!", "He he he!", "Ho ho ho!", "😂😂😂", "🤣"]
 CATEGORIES = ["all", "neutral", "chuck"]
 
-
-def voice_output(text: str):
-    """
-    Speak text if voice engine is available, otherwise skip.
-    """
-    if not voice_enabled:
-        return
+# storage helpers
+def save_state():
     try:
-        engine.say(text)
-        engine.runAndWait()
+        localStorage.setItem('joke_history', json.dumps(joke_history))
+        localStorage.setItem('rating_history', json.dumps(rating_history))
     except Exception:
         pass
 
-
-def print_commands():
-    commands = {
-        1: 'Tell me a joke',
-        2: 'Exit the program',
-        3: f"Choose a joke category from {CATEGORIES}",
-        4: 'Show past jokes in this session',
-        5: 'Hear the last joke again',
-        6: 'Show stats on jokes and ratings',
-    }
-    print("\nAvailable commands:")
-    for cmd, desc in commands.items():
-        print(f"  {cmd}: {desc}")
-
-
-def choose_category():
-    print(f"Available categories: {', '.join(CATEGORIES)}")
-    selected = input("Choose a category (or press Enter for default): ").strip().lower()
-    if selected in CATEGORIES:
-        return selected
-    elif selected == '':
-        return None
-    else:
-        print("Unknown category, using default.")
-        return None
-
-
-def tell_joke(category=None):
-    # Fetch joke
+def load_state():
     try:
-        joke = pyjokes.get_joke(category=category) if category else pyjokes.get_joke()
+        jh = localStorage.getItem('joke_history')
+        rh = localStorage.getItem('rating_history')
+        if jh: joke_history.extend(json.loads(jh))
+        if rh: rating_history.extend(json.loads(rh))
     except Exception:
-        joke = pyjokes.get_joke()
-    joke_history.append(joke)
+        pass
 
-    # Display and speak
-    print("\nHere's your joke:")
-    print(joke)
-    voice_output(joke)
+# UI helpers
+def set_text(el_id: str, text: str):
+    document.getElementById(el_id).innerText = text
 
-    # Laugh reaction
-    laugh = random.choice(["Ha ha ha!", "He he he!", "Ho ho ho!"])
-    print(laugh)
-    voice_output(laugh)
+def show_rating(show=True):
+    el = document.getElementById('rating')
+    cls = el.classList
+    if show: cls.add('show')
+    else: cls.remove('show')
 
-    # Ask for rating
-    while True:
-        rating = input("Rate this joke from 1 (bad) to 5 (great): ").strip()
-        if rating.isdigit() and 1 <= int(rating) <= 5:
-            rating = int(rating)
-            break
-        print("Please enter a number between 1 and 5.")
+def update_history_view():
+    lst = document.getElementById('history')
+    lst.innerHTML = ''
+    for j in joke_history[-100:]:
+        li = document.createElement('li')
+        li.textContent = j
+        lst.appendChild(li)
 
-    rating_history.append(rating)
-    if rating >= 4:
-        response = "Glad you liked it!"
-    elif rating >= 2:
-        response = "Thanks for your feedback! I'll try to do better."
-    else:
-        response = "Sorry that one missed the mark. I'll find a funnier one next time!"
-    print(response)
-    voice_output(response)
-
-
-def show_history():
-    if not joke_history:
-        print("No jokes told yet.")
-    else:
-        print("\nJokes told this session:")
-        for idx, j in enumerate(joke_history, 1):
-            print(f"  {idx}. {j}")
-
-
-def repeat_last():
-    if not joke_history:
-        print("No joke to repeat yet.")
-    else:
-        last = joke_history[-1]
-        print("\nRepeating last joke:")
-        print(last)
-        voice_output(last)
-
-
-def show_stats():
+def update_stats_view():
     count = len(joke_history)
-    if count == 0:
-        print("No jokes or ratings yet.")
-    else:
-        avg = sum(rating_history) / len(rating_history)
-        print(f"\nTotal jokes told: {count}")
-        print(f"Average rating: {avg:.2f} / 5")
+    avg = (sum(rating_history) / len(rating_history)) if rating_history else 0.0
+    set_text('stat-count', str(count))
+    set_text('stat-avg', f"{avg:.2f}")
 
-
-def vjokes():
-    print("Welcome to Jokes Program!")
-    voice_output("Welcome to Jokes Program!")
-
-    name = input("What's your name?: \n").strip()
+# actions wired via pys-onClick
+def greet_if_needed():
+    name = document.getElementById('name').value.strip()
     if name:
-        greeting = f"Hi, {name}! Ready for some laughs?"
-    else:
-        greeting = "Hi there! Ready for some laughs?"
-    print(greeting)
-    voice_output(greeting)
+        set_text('joke', f"Hi, {name}! Ready for some laughs? Click 'Tell me a joke'.")
 
-    current_category = None
-    print_commands()
+def _get_category_from_ui():
+    sel = document.getElementById('category').value
+    if sel == 'auto':
+        return None
+    # pyjokes expects one of: neutral, chuck, all
+    if sel in CATEGORIES:
+        return sel
+    return None
 
-    while True:
-        try:
-            print_commands()
-            cmd = int(input("\nEnter command : "))
-
-            match cmd:
-                # tell a joke
-                case 1:
-                    tell_joke(current_category)
-
-                # exit
-                case 2:
-                    farewell = "See you soon!"
-                    print(farewell)
-                    voice_output(farewell)
-                    break
-
-                # choose category
-                case 3:
-                    current_category = choose_category()
-
-                # history
-                case 4:
-                    show_history()
-
-                # repeat last
-                case 5:
-                    repeat_last()
-
-                # stats
-                case 6:
-                    show_stats()
-        except ValueError:
-            print("Enter Valid Option.")
-            voice_output("Sorry,Enter Valid Option.")
-
-
-if __name__ == "__main__":
+def tell_joke_py(event=None):
+    cat = _get_category_from_ui()
     try:
-        vjokes()
-    except KeyboardInterrupt:
-        print("\nInterrupted. Goodbye!")
-        sys.exit(0)
+        joke = pyjokes.get_joke(category=cat) if cat else pyjokes.get_joke()
+    except Exception:
+        # fallback to any joke
+        joke = pyjokes.get_joke()
+
+    joke_history.append(joke)
+    save_state()
+
+    set_text('joke', joke)
+    laugh = random.choice(LAUGHS)
+    set_text('laugh', laugh)
+    speak(joke + " " + laugh)
+    show_rating(True)
+    set_text('rate-msg', "")
+    update_history_view()
+    update_stats_view()
+
+def repeat_last_py(event=None):
+    if not joke_history:
+        set_text('joke', 'No joke to repeat yet.')
+        return
+    last = joke_history[-1]
+    set_text('joke', last)
+    speak(last)
+    show_rating(True)
+    set_text('rate-msg', "")
+
+
+def show_history_py(event=None):
+    update_history_view()
+
+def show_stats_py(event=None):
+    update_stats_view()
+
+def clear_history_py(event=None):
+    joke_history.clear(); rating_history.clear(); save_state()
+    update_history_view(); update_stats_view()
+    set_text('joke', 'History cleared. Ready for a fresh laugh!')
+    set_text('laugh', '')
+    show_rating(False)
+
+def rate_py(event=None):
+    # score is stored in the clicked button data score
+    try:
+        score = int(event.target.getAttribute('data-score'))
+    except Exception:
+        score = 3
+    rating_history.append(score)
+    save_state()
+
+    # Friendly response
+    if score >= 4:
+        msg = "Glad you liked it!"
+    elif score >= 2:
+        msg = "Thanks for the feedback!"
+    else:
+        msg = "Oof, tough crowd. I’ll do better next time!"
+
+    set_text('rate-msg', msg)
+    speak(msg)
+    update_stats_view()
+
+# boot
+load_state()
+update_history_view()
+update_stats_view()
+greet_if_needed()
