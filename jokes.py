@@ -63,10 +63,6 @@ def update_stats_view():
     set_text('stat-avg', f"{avg:.2f}")
 
 # actions
-def greet_if_needed():
-    name = document.getElementById('name').value.strip()
-    if name:
-        set_text('joke', f"Hi, {name}! Ready for some laughs? Click 'Tell me a joke'.")
 
 def _get_category_from_ui() -> str | None:
     sel: str = document.getElementById('category').value
@@ -146,5 +142,4 @@ def rate_py(event=None):
 load_state()
 update_history_view()
 update_stats_view()
-
 greet_if_needed()
