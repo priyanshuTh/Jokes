@@ -142,4 +142,4 @@ def rate_py(event=None):
 load_state()
 update_history_view()
 update_stats_view()
-greet_if_needed()
+
