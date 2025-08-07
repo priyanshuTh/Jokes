@@ -8,7 +8,7 @@ joke_history = []
 rating_history = []
 
 MAX_HISTORY = 100
-LAUGHS = ["Ha ha ha!", "He he he!", "Ho ho ho!", "😂😂😂", "🤣"]
+LAUGHS = ["Ha ha ha!", "He he he!", "Ho ho ho!"]
 CATEGORIES = ["all", "neutral", "chuck"]
  
 
@@ -146,4 +146,5 @@ def rate_py(event=None):
 load_state()
 update_history_view()
 update_stats_view()
+
 greet_if_needed()
