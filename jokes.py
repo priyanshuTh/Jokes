@@ -1,32 +1,59 @@
+# Import required modules
 from js import document, localStorage, speak
-import pyjokes, json, random
+import json, random
+from pyodide.http import pyfetch
+
+async def init():
+    # Initialize the joke application by installing dependencies and loading state.
+    from pyodide.ffi import create_proxy
+    import micropip
+    
+    # Install required packages
+    await micropip.install('pyjokes')
+    
+    global pyjokes
+    import pyjokes
+    
+    load_state()
+    update_history_view()
+    update_stats_view()
+    greet_if_needed()
 
 # Persistent state
 joke_history: list[str] = []
 rating_history: list[int] = []
 
+MAX_HISTORY = 100
 LAUGHS = ["Ha ha ha!", "He he he!", "Ho ho ho!", "😂😂😂", "🤣"]
 CATEGORIES = ["all", "neutral", "chuck"]
+ 
 
 # storage
 def save_state():
     try:
-        localStorage.setItem('joke_history', json.dumps(joke_history))
-        localStorage.setItem('rating_history', json.dumps(rating_history))
+        # Limit stored history
+        limited_jokes = joke_history[-MAX_HISTORY:]
+        limited_ratings = rating_history[-MAX_HISTORY:]
+        localStorage.setItem('joke_history', json.dumps(limited_jokes))
+        localStorage.setItem('rating_history', json.dumps(limited_ratings))
     except Exception:
         pass
 
-def load_state():
+def load_state() -> None:
     try:
         jh = localStorage.getItem('joke_history')
         rh = localStorage.getItem('rating_history')
-        if jh: joke_history.extend(json.loads(jh))
-        if rh: rating_history.extend(json.loads(rh))
-    except Exception:
-        pass
+        if jh and rh:  # Check both values
+            joke_data = json.loads(jh)
+            rating_data = json.loads(rh)
+            if isinstance(joke_data, list) and isinstance(rating_data, list):
+                joke_history.extend(joke_data)
+                rating_history.extend(rating_data)
+    except Exception as e:
+        print(f"Error loading state: {e}")
 
 # UI
-def set_text(el_id: str, text: str):
+def set_text(el_id: str, text: str) -> None:
     document.getElementById(el_id).innerText = text
 
 def show_rating(show=True):
@@ -55,8 +82,8 @@ def greet_if_needed():
     if name:
         set_text('joke', f"Hi, {name}! Ready for some laughs? Click 'Tell me a joke'.")
 
-def _get_category_from_ui():
-    sel = document.getElementById('category').value
+def _get_category_from_ui() -> str | None:
+    sel: str = document.getElementById('category').value
     if sel == 'auto':
         return None
     # pyjokes expects one of: neutral, chuck, all
@@ -65,13 +92,13 @@ def _get_category_from_ui():
     return None
 
 def tell_joke_py(event=None):
-    cat = _get_category_from_ui()
     try:
+        cat = _get_category_from_ui()
         joke = pyjokes.get_joke(category=cat) if cat else pyjokes.get_joke()
-    except Exception:
-        # fallback to any joke
-        joke = pyjokes.get_joke()
-
+    except Exception as e:
+        print(f"Error fetching joke: {e}")
+        joke = "Why did the programmer quit his job? Because he didn't get arrays! (Backup joke - API error)"
+    
     joke_history.append(joke)
     save_state()
 
@@ -129,8 +156,4 @@ def rate_py(event=None):
     speak(msg)
     update_stats_view()
 
-# boot
-load_state()
-update_history_view()
-update_stats_view()
-greet_if_needed()
+init()
