@@ -27,13 +27,27 @@
 }
 
 .rating {
-  display: none;
+  display: flex;
+  /* Changed from 'none' to 'flex' */
   gap: 8px;
   align-items: center;
+  margin-top: 1rem;
+  padding: 10px;
+  border-top: 1px solid var(--edge);
 }
 
-.rating.show {
-  display: flex;
+.rating button {
+  transition: all 0.2s;
+}
+
+.rating button:hover {
+  background: var(--edge);
+  transform: scale(1.1);
+}
+
+.rating button[disabled] {
+  opacity: 0.5;
+  pointer-events: none;
 }
 
 .history {

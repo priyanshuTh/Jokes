@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Jokes Web App</title>
+  <title>😄Jokes Web App</title>
 
   <!-- PyScript (specific version) -->
   <link rel="stylesheet" href="https://pyscript.net/releases/2024.4.1/core.css" />
@@ -48,11 +48,6 @@
         <div class="app-card p-3">
           <div class="d-flex flex-wrap align-items-end gap-2">
             <div class="me-2">
-              <label for="name" class="form-label text-secondary">Name</label>
-              <input id="name" type="text" class="form-control bg-dark-subtle border-0"
-                placeholder="Your name (optional)" />
-            </div>
-            <div class="me-2">
               <label for="category" class="form-label text-secondary">Category</label>
               <select id="category" class="form-select bg-dark-subtle border-0">
                 <option value="auto" selected>Auto (default)</option>
@@ -89,7 +84,7 @@
           </div>
           <div id="laugh" class="muted mt-1"></div>
 
-          <div class="rating mt-2 d-none" id="rating">
+          <div class="rating" id="rating">
             <span class="muted me-2">Rate this joke:</span>
             <button class="btn btn-outline-light tw-w-10 tw-h-10 tw-p-0 tw-rounded-xl" data-score="1"
               py-click="rate_py">1</button>
