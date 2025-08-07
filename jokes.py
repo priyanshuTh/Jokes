@@ -1,27 +1,11 @@
 # Import required modules
 from js import document, localStorage, speak
 import json, random
-from pyodide.http import pyfetch
-
-async def init():
-    # Initialize the joke application by installing dependencies and loading state.
-    from pyodide.ffi import create_proxy
-    import micropip
-    
-    # Install required packages
-    await micropip.install('pyjokes')
-    
-    global pyjokes
-    import pyjokes
-    
-    load_state()
-    update_history_view()
-    update_stats_view()
-    greet_if_needed()
+import pyjokes  # Directly imported since installed via py-config
 
 # Persistent state
-joke_history: list[str] = []
-rating_history: list[int] = []
+joke_history = []
+rating_history = []
 
 MAX_HISTORY = 100
 LAUGHS = ["Ha ha ha!", "He he he!", "Ho ho ho!", "😂😂😂", "🤣"]
@@ -59,8 +43,10 @@ def set_text(el_id: str, text: str) -> None:
 def show_rating(show=True):
     el = document.getElementById('rating')
     cls = el.classList
-    if show: cls.add('show')
-    else: cls.remove('show')
+    if show: 
+        cls.remove('d-none')
+    else: 
+        cls.add('d-none')
 
 def update_history_view():
     lst = document.getElementById('history')
@@ -156,4 +142,8 @@ def rate_py(event=None):
     speak(msg)
     update_stats_view()
 
-init()
+# Initialize app
+load_state()
+update_history_view()
+update_stats_view()
+greet_if_needed()
