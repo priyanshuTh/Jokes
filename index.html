@@ -41,7 +41,6 @@
   <div class="container py-4">
     <header class="d-flex align-items-center gap-2 mb-3">
       <h1 class="h3 m-0">😄 Jokes Web App</h1>
-      <span class="badge text-bg-dark tw-bg-[#222642]">HTML • CSS • PyScript • Bootstrap • Tailwind</span>
     </header>
 
     <section class="row g-3">
@@ -55,7 +54,7 @@
             </div>
             <div class="me-2">
               <label for="category" class="form-label text-secondary">Category</label>
-              <select id="category" class="form-select bg-dark-subtle border-0">
+              <select id="category" class="form-select bg-dark-subtle border-0" aria-label="Select joke category">
                 <option value="auto" selected>Auto (default)</option>
                 <option value="neutral">neutral</option>
                 <option value="chuck">chuck</option>
@@ -64,7 +63,8 @@
             </div>
 
             <div class="d-flex flex-wrap gap-2">
-              <button class="btn btn-primary tw-rounded-xl" id="btn-tell" pys-onClick="tell_joke_py">Tell me a
+              <button class="btn btn-primary tw-rounded-xl" id="btn-tell" pys-onClick="tell_joke_py"
+                aria-label="Tell me a joke">Tell me a
                 joke</button>
               <button class="btn btn-outline-light tw-rounded-xl" id="btn-repeat" pys-onClick="repeat_last_py">Repeat
                 last</button>
@@ -130,7 +130,7 @@
   </div>
 
   <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+  <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
     crossorigin="anonymous"></script>
 
@@ -143,7 +143,9 @@
         const u = new SpeechSynthesisUtterance(text);
         u.rate = 1; u.pitch = 1; u.volume = 1;
         window.speechSynthesis.speak(u);
-      } catch (e) {/* ignore */ }
+      } catch (e) {
+        console.warn('Speech synthesis not supported:', e);
+      }
     }
     function toggleVoice(btn) {
       voiceOn = !voiceOn;
