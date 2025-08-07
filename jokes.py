@@ -81,6 +81,13 @@ def tell_joke_py(event=None):
         print(f"Error fetching joke: {e}")
         joke = "Why did the programmer quit his job? Because he didn't get arrays! (Backup joke - API error)"
     
+    # Reset rating state
+    document.getElementById('rating').style.display = 'flex'
+    document.getElementById('rate-msg').innerText = ''
+    # Enable all rating buttons
+    for btn in document.querySelectorAll('#rating button'):
+        btn.disabled = False
+    
     joke_history.append(joke)
     save_state()
 
@@ -88,10 +95,19 @@ def tell_joke_py(event=None):
     laugh = random.choice(LAUGHS)
     set_text('laugh', laugh)
     speak(joke + " " + laugh)
-    show_rating(True)
-    set_text('rate-msg', "")
+    
     update_history_view()
     update_stats_view()
+
+def update_stats_view():
+    count = len(joke_history)
+    # Fix average calculation
+    if rating_history:
+        avg = sum(rating_history) / len(rating_history)
+    else:
+        avg = 0.0
+    set_text('stat-count', str(count))
+    set_text('stat-avg', f"{avg:.2f}")
 
 def repeat_last_py(event=None):
     if not joke_history:
@@ -118,13 +134,17 @@ def clear_history_py(event=None):
     show_rating(False)
 
 def rate_py(event=None):
-    # stores score
     try:
         score = int(event.target.getAttribute('data-score'))
     except Exception:
         score = 3
+    
     rating_history.append(score)
     save_state()
+
+    # Disable all rating buttons after rating
+    for btn in document.querySelectorAll('#rating button'):
+        btn.disabled = True
 
     # Friendly response
     if score >= 4:
@@ -132,7 +152,7 @@ def rate_py(event=None):
     elif score >= 2:
         msg = "Thanks for the feedback!"
     else:
-        msg = "Oof, tough crowd. I’ll do better next time!"
+        msg = "Oof, tough crowd. I'll do better next time!"
 
     set_text('rate-msg', msg)
     speak(msg)
@@ -142,4 +162,3 @@ def rate_py(event=None):
 load_state()
 update_history_view()
 update_stats_view()
-
