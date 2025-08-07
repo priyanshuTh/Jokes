@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Jokes Web App — PyScript</title>
+
+  <!-- PyScript -->
+  <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+  <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+
+  <!-- App styles -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <div class="wrap grid">
+    <header>
+      <h1>😄 Jokes Web App</h1>
+      <span class="tag">HTML • CSS • PyScript</span>
+    </header>
+
+    <section class="card grid cols" aria-label="main panels">
+      <div class="grid" style="gap:14px">
+        <div class="controls">
+          <div class="control">
+            <label for="name">Name</label>
+            <input id="name" type="text" placeholder="Your name (optional)" />
+          </div>
+          <div class="control">
+            <label for="category">Category</label>
+            <select id="category">
+              <option value="auto" selected>Auto (default)</option>
+              <option value="neutral">neutral</option>
+              <option value="chuck">chuck</option>
+              <option value="all">all</option>
+            </select>
+          </div>
+          <button class="primary" id="btn-tell" pys-onClick="tell_joke_py">Tell me a joke</button>
+          <button id="btn-repeat" pys-onClick="repeat_last_py">Repeat last</button>
+          <button id="btn-history" pys-onClick="show_history_py">Show history</button>
+          <button id="btn-stats" pys-onClick="show_stats_py">Show stats</button>
+          <button class="danger" id="btn-clear" pys-onClick="clear_history_py">Clear history</button>
+          <button id="btn-voice" onclick="toggleVoice(this)">🔊 Voice: On</button>
+        </div>
+
+        <div class="joke-box" id="joke" aria-live="polite">Let’s get started! Click <b>Tell me a joke</b>.</div>
+        <div id="laugh" class="muted"></div>
+
+        <div class="rating" id="rating">
+          <span class="muted">Rate this joke:</span>
+          <button data-score="1" pys-onClick="rate_py">1</button>
+          <button data-score="2" pys-onClick="rate_py">2</button>
+          <button data-score="3" pys-onClick="rate_py">3</button>
+          <button data-score="4" pys-onClick="rate_py">4</button>
+          <button data-score="5" pys-onClick="rate_py">5</button>
+          <span id="rate-msg" class="muted" style="margin-left:10px"></span>
+        </div>
+      </div>
+
+      <div class="grid" style="gap:14px">
+        <div class="card" style="background:#121531">
+          <h3 style="margin-top:0">History (this browser)</h3>
+          <ol id="history" class="history"></ol>
+        </div>
+        <div class="card" style="background:#121531">
+          <h3 style="margin-top:0">Stats</h3>
+          <div class="statline">
+            <div class="stat">
+              <div class="num" id="stat-count">0</div>
+              <div class="muted">Total jokes</div>
+            </div>
+            <div class="stat">
+              <div class="num" id="stat-avg">0.00</div>
+              <div class="muted">Average rating</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      Uses <a href="https://pyscript.net/" target="_blank" rel="noreferrer noopener">PyScript</a> (Python in the
+      browser) and <a href="https://pypi.org/project/pyjokes/" target="_blank" rel="noreferrer noopener">pyjokes</a>.
+      Voice uses your browser’s Speech Synthesis.
+    </footer>
+  </div>
+
+  <!--Tiny JS helper for voice -->
+  <script>
+    let voiceOn = true;
+    function speak(text) {
+      if (!voiceOn) return;
+      try {
+        const u = new SpeechSynthesisUtterance(text);
+        u.rate = 1; u.pitch = 1; u.volume = 1;
+        window.speechSynthesis.speak(u);
+      } catch (e) {/* ignore */ }
+    }
+    function toggleVoice(btn) {
+      voiceOn = !voiceOn;
+      btn.textContent = voiceOn ? "🔊 Voice: On" : "🔇 Voice: Off";
+    }
+  </script>
+
+  <py-env>
+    - pyjokes
+  </py-env>
+
+  <!-- Load Python from a separate file -->
+  <py-script src="jokes.py"></py-script>
+</body>
+
+</html>
