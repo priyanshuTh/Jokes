@@ -4,74 +4,116 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Jokes Web App — PyScript</title>
+  <title>Jokes Web App</title>
 
   <!-- PyScript -->
   <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
   <script defer src="https://pyscript.net/latest/pyscript.js"></script>
 
-  <!-- App styles -->
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+  <!-- Tailwind-->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      prefix: 'tw-',
+      corePlugins: { preflight: false },
+      theme: {
+        extend: {
+          colors: {
+            ink: '#e8e8f0',
+            muted: '#a9aac0',
+            card: '#171a2b',
+            edge: '#24273f',
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- css -->
   <link rel="stylesheet" href="style.css" />
 </head>
 
-<body>
-  <div class="wrap grid">
-    <header>
-      <h1>😄 Jokes Web App</h1>
-      <span class="tag">HTML • CSS • PyScript</span>
+<body class="tw-min-h-screen tw-bg-gradient-to-b tw-from-slate-900 tw-to-[#0f1220] tw-text-ink">
+  <div class="container py-4">
+    <header class="d-flex align-items-center gap-2 mb-3">
+      <h1 class="h3 m-0">😄 Jokes Web App</h1>
+      <span class="badge text-bg-dark tw-bg-[#222642]">HTML • CSS • PyScript • Bootstrap • Tailwind</span>
     </header>
 
-    <section class="card grid cols" aria-label="main panels">
-      <div class="grid" style="gap:14px">
-        <div class="controls">
-          <div class="control">
-            <label for="name">Name</label>
-            <input id="name" type="text" placeholder="Your name (optional)" />
-          </div>
-          <div class="control">
-            <label for="category">Category</label>
-            <select id="category">
-              <option value="auto" selected>Auto (default)</option>
-              <option value="neutral">neutral</option>
-              <option value="chuck">chuck</option>
-              <option value="all">all</option>
-            </select>
-          </div>
-          <button class="primary" id="btn-tell" pys-onClick="tell_joke_py">Tell me a joke</button>
-          <button id="btn-repeat" pys-onClick="repeat_last_py">Repeat last</button>
-          <button id="btn-history" pys-onClick="show_history_py">Show history</button>
-          <button id="btn-stats" pys-onClick="show_stats_py">Show stats</button>
-          <button class="danger" id="btn-clear" pys-onClick="clear_history_py">Clear history</button>
-          <button id="btn-voice" onclick="toggleVoice(this)">🔊 Voice: On</button>
-        </div>
+    <section class="row g-3">
+      <div class="col-md-7">
+        <div class="app-card p-3">
+          <div class="d-flex flex-wrap align-items-end gap-2">
+            <div class="me-2">
+              <label for="name" class="form-label text-secondary">Name</label>
+              <input id="name" type="text" class="form-control bg-dark-subtle border-0"
+                placeholder="Your name (optional)" />
+            </div>
+            <div class="me-2">
+              <label for="category" class="form-label text-secondary">Category</label>
+              <select id="category" class="form-select bg-dark-subtle border-0">
+                <option value="auto" selected>Auto (default)</option>
+                <option value="neutral">neutral</option>
+                <option value="chuck">chuck</option>
+                <option value="all">all</option>
+              </select>
+            </div>
 
-        <div class="joke-box" id="joke" aria-live="polite">Let’s get started! Click <b>Tell me a joke</b>.</div>
-        <div id="laugh" class="muted"></div>
+            <div class="d-flex flex-wrap gap-2">
+              <button class="btn btn-primary tw-rounded-xl" id="btn-tell" pys-onClick="tell_joke_py">Tell me a
+                joke</button>
+              <button class="btn btn-outline-light tw-rounded-xl" id="btn-repeat" pys-onClick="repeat_last_py">Repeat
+                last</button>
+              <button class="btn btn-outline-light tw-rounded-xl" id="btn-history" pys-onClick="show_history_py">Show
+                history</button>
+              <button class="btn btn-outline-light tw-rounded-xl" id="btn-stats" pys-onClick="show_stats_py">Show
+                stats</button>
+              <button class="btn btn-danger tw-rounded-xl" id="btn-clear" pys-onClick="clear_history_py">Clear
+                history</button>
+              <button class="btn btn-secondary tw-rounded-xl" id="btn-voice" onclick="toggleVoice(this)">🔊 Voice:
+                On</button>
+            </div>
+          </div>
 
-        <div class="rating" id="rating">
-          <span class="muted">Rate this joke:</span>
-          <button data-score="1" pys-onClick="rate_py">1</button>
-          <button data-score="2" pys-onClick="rate_py">2</button>
-          <button data-score="3" pys-onClick="rate_py">3</button>
-          <button data-score="4" pys-onClick="rate_py">4</button>
-          <button data-score="5" pys-onClick="rate_py">5</button>
-          <span id="rate-msg" class="muted" style="margin-left:10px"></span>
+          <div class="joke-box mt-3" id="joke" aria-live="polite">
+            Let’s get started! Click <b>Tell me a joke</b>.
+          </div>
+          <div id="laugh" class="muted mt-1"></div>
+
+          <div class="rating mt-2" id="rating">
+            <span class="muted me-2">Rate this joke:</span>
+            <button class="btn btn-outline-light tw-w-10 tw-h-10 tw-p-0 tw-rounded-xl" data-score="1"
+              pys-onClick="rate_py">1</button>
+            <button class="btn btn-outline-light tw-w-10 tw-h-10 tw-p-0 tw-rounded-xl" data-score="2"
+              pys-onClick="rate_py">2</button>
+            <button class="btn btn-outline-light tw-w-10 tw-h-10 tw-p-0 tw-rounded-xl" data-score="3"
+              pys-onClick="rate_py">3</button>
+            <button class="btn btn-outline-light tw-w-10 tw-h-10 tw-p-0 tw-rounded-xl" data-score="4"
+              pys-onClick="rate_py">4</button>
+            <button class="btn btn-outline-light tw-w-10 tw-h-10 tw-p-0 tw-rounded-xl" data-score="5"
+              pys-onClick="rate_py">5</button>
+            <span id="rate-msg" class="muted ms-2"></span>
+          </div>
         </div>
       </div>
 
-      <div class="grid" style="gap:14px">
-        <div class="card" style="background:#121531">
-          <h3 style="margin-top:0">History (this browser)</h3>
+      <div class="col-md-5">
+        <div class="app-card p-3 mb-3">
+          <h3 class="h5 m-0 mb-2">History (this browser)</h3>
           <ol id="history" class="history"></ol>
         </div>
-        <div class="card" style="background:#121531">
-          <h3 style="margin-top:0">Stats</h3>
+        <div class="app-card p-3">
+          <h3 class="h5 m-0 mb-2">Stats</h3>
           <div class="statline">
-            <div class="stat">
+            <div class="stat text-center">
               <div class="num" id="stat-count">0</div>
               <div class="muted">Total jokes</div>
             </div>
-            <div class="stat">
+            <div class="stat text-center">
               <div class="num" id="stat-avg">0.00</div>
               <div class="muted">Average rating</div>
             </div>
@@ -80,14 +122,19 @@
       </div>
     </section>
 
-    <footer>
-      Uses <a href="https://pyscript.net/" target="_blank" rel="noreferrer noopener">PyScript</a> (Python in the
-      browser) and <a href="https://pypi.org/project/pyjokes/" target="_blank" rel="noreferrer noopener">pyjokes</a>.
-      Voice uses your browser’s Speech Synthesis.
+    <footer class="mt-3 text-secondary small">
+      Uses <a class="link-light" href="https://pyscript.net/" target="_blank" rel="noreferrer noopener">PyScript</a> and
+      <a class="link-light" href="https://pypi.org/project/pyjokes/" target="_blank"
+        rel="noreferrer noopener">pyjokes</a>. Voice uses your browser’s Speech Synthesis.
     </footer>
   </div>
 
-  <!--Tiny JS helper for voice -->
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
+
+  <!-- JS helper for voice -->
   <script>
     let voiceOn = true;
     function speak(text) {

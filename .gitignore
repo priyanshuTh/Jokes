@@ -1,0 +1,18 @@
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+
+# Python / virtualenv (not required here, but harmless)
+.venv/
+__pycache__/
+
+# Build outputs (if you later add any tooling)
+dist/
+build/
+
+# Env files
+*.env

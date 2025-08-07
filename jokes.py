@@ -1,14 +1,14 @@
 from js import document, localStorage, speak
 import pyjokes, json, random
 
-# kept in this tab + localStorage
+# Persistent state
 joke_history: list[str] = []
 rating_history: list[int] = []
 
 LAUGHS = ["Ha ha ha!", "He he he!", "Ho ho ho!", "😂😂😂", "🤣"]
 CATEGORIES = ["all", "neutral", "chuck"]
 
-# storage helpers
+# storage
 def save_state():
     try:
         localStorage.setItem('joke_history', json.dumps(joke_history))
@@ -25,7 +25,7 @@ def load_state():
     except Exception:
         pass
 
-# UI helpers
+# UI
 def set_text(el_id: str, text: str):
     document.getElementById(el_id).innerText = text
 
@@ -49,7 +49,7 @@ def update_stats_view():
     set_text('stat-count', str(count))
     set_text('stat-avg', f"{avg:.2f}")
 
-# actions wired via pys-onClick
+# actions
 def greet_if_needed():
     name = document.getElementById('name').value.strip()
     if name:
@@ -109,7 +109,7 @@ def clear_history_py(event=None):
     show_rating(False)
 
 def rate_py(event=None):
-    # score is stored in the clicked button data score
+    # stores score
     try:
         score = int(event.target.getAttribute('data-score'))
     except Exception:
